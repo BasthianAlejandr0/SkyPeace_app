@@ -1,0 +1,16 @@
+Explicación de las Correcciones
+Esperar la Autenticación de Google:
+
+Corrección: final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+Razón: Es necesario usar await para esperar la selección de cuenta por parte del usuario.
+Obtener GoogleSignInAuthentication de manera segura:
+
+Corrección: final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+Razón: Asegurarse de que googleUser no sea nulo antes de obtener la autenticación.
+Tipado Correcto:
+
+Corrección: Asegúrate de que las credenciales sean del tipo OAuthCredential y que el método loginGoogle devuelva User?.
+Manejo de Errores:
+
+Corrección: Uso de try-catch para capturar y manejar cualquier excepción que ocurra durante el proceso.
+Razón: Es importante capturar errores y actuar en consecuencia, en este caso, devolver null si hay un fallo.
