@@ -1,95 +1,127 @@
 import 'package:flutter/material.dart';
+import 'package:sky_peace_/presentations/widgets/profile_icon.dart';
+import 'package:sky_peace_/presentations/widgets/list_menu.dart';
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(181, 0, 119, 255),
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(25.0),
-              child: Center(
+      body: Container(
+        // Aplicando el gradiente
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.bottomLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color.fromARGB(255, 14, 117, 201),
+              Color.fromARGB(255, 109, 194, 239),
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                 child: Column(
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        //Texto de bienvenida
-                        Column(
+                        // Texto de bienvenida
+                        const Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Holaaa Dakota",
+                              "¡Hola, Usuario!",
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 24,
-                                fontWeight: FontWeight.w400
+                                fontWeight: FontWeight.w400,
                               ),
                             ),
-                            SizedBox(height: 10,),
+                            SizedBox(height: 10),
                             Text(
                               "¿A dónde volamos hoy?",
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,
-                                fontWeight: FontWeight.w400
+                                fontWeight: FontWeight.w400,
                               ),
-                            )
+                            ),
                           ],
                         ),
-                        SizedBox(width: 10,),
-                        //Icono de perfil
+                        const SizedBox(width: 10),
+                        const Spacer(),
+                        // Icono de notificaciones
                         Container(
                           decoration: BoxDecoration(
-                            color: const Color.fromARGB(255, 26, 146, 244),
+                            color: const Color(0xFF1A92F4),
                             borderRadius: BorderRadius.circular(15),
                           ),
-                          padding: EdgeInsets.all(12),
-                          child: Icon(
-                            Icons.notifications,
-                            size: 30,
-                            color: const Color.fromARGB(255, 255, 255, 255),
+                          padding: const EdgeInsets.all(5),
+                            child: const ProfileIcon(),
+                         ),
+                        const SizedBox(width: 20),
+                        // Icono de perfil
+                        Container(
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF1A92F4),
+                            borderRadius: BorderRadius.circular(15),
                           ),
-                        )
+                          padding: const EdgeInsets.all(5),
+                          child: const ListMenu(),
+                        ),
                       ],
-                    )
+                    ),
                   ],
-                )
-                  
+                ),
               ),
-            ),
+              const SizedBox(height: 20),
+              Expanded(
+                child: Container(
+                  color: Colors.white, // El área blanca para el contenido principal
+                ),
+              ),
+            ],
+          ),
         ),
+      ),
+      // BottomNavigationBar
+      bottomNavigationBar: buttomBar(),
+    );
+  }
 
-//-----------------BottonNavigationBar-----------------
-        //BottomNavigationBar es un widget que se coloca en la parte inferior de la pantalla
-        bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: Colors.white,
-          items: [
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.cloud,
-                color: const Color.fromARGB(255, 0, 61, 135),
-                ),
-              label: 'Inicio'
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.add,
-                color: const Color.fromARGB(255, 0, 61, 135),
-                ),
-              label: 'Agregar vuelo'
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.settings,
-                color: const Color.fromARGB(255, 0, 61, 135),
-                ),
-              label: 'Ajustes',
-              
-            ),
-          ],
+  BottomNavigationBar buttomBar() {
+    return BottomNavigationBar(
+      backgroundColor: const Color.fromARGB(255, 71, 175, 255),
+      items: const [
+        BottomNavigationBarItem(
+          icon: Icon(
+            Icons.cloud,
+            color: Color.fromARGB(255, 0, 61, 135),
+          ),
+          label: '',
         ),
+        BottomNavigationBarItem(
+          icon: Icon(
+            Icons.add,
+            size: 40,
+            color: Color.fromARGB(255, 0, 61, 135),
+          ),
+          label: 'Agregar',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(
+            Icons.settings,
+            color: Color.fromARGB(255, 0, 61, 135),
+          ),
+          label: '',
+        ),
+      ],
     );
   }
 }
+
