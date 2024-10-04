@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "237221825209",
+    "project_id": "pruebasbackend-3f420",
+    "storage_bucket": "pruebasbackend-3f420.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:237221825209:android:2b04b6ac96f97eb6fa6968",
+        "android_client_info": {
+          "package_name": "com.pruebas_app.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCNrumWxFXXUtzt3sO4Ogb2eKHVWLRZt_E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:237221825209:android:bca9072114b44d63fa6968",
+        "android_client_info": {
+          "package_name": "com.pruebasapp.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCNrumWxFXXUtzt3sO4Ogb2eKHVWLRZt_E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
