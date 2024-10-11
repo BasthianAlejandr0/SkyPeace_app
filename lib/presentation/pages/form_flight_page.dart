@@ -1,4 +1,7 @@
+import 'package:app_skypeace_flight/core/models/flightNum.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import '../../core/constants/api_key.dart';
 
 class FormFlightPage extends StatefulWidget {
   const FormFlightPage({super.key});
@@ -9,6 +12,42 @@ class FormFlightPage extends StatefulWidget {
 
 class _FormFlightPageState extends State<FormFlightPage> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _flightNumberController = TextEditingController();
+  FlightNum? flight; // Variable para almacenar los datos del vuelo
+  bool isLoading = false; // Estado de carga
+
+  Future<void> getFlightByNumber(String flightNumber) async {
+    const String endpoint = 'https://aviation-edge.com/v2/public/flights';
+
+    setState(() {
+      isLoading = true; // Inicia la carga
+    });
+
+    try {
+      final response = await Dio().get(
+        '$endpoint?flightNum=$flightNumber&key=$apiKey',
+      );
+
+      if (response.data != null && response.data.isNotEmpty) {
+        final flightData = response.data[0]; // Obtiene el primer vuelo de la respuesta
+        flight = FlightNum.fromJson(flightData); // Convierte el JSON a un objeto FlightNum
+      } else {
+        flight = null; // Si no hay datos, establece flight a null
+      }
+
+      setState(() {}); // Actualiza la UI
+    } catch (e) {
+      print('Error al obtener datos del vuelo: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error al obtener datos del vuelo.')),
+      );
+      flight = null; // Si hay un error, establece flight a null
+    } finally {
+      setState(() {
+        isLoading = false; // Finaliza la carga
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +82,7 @@ class _FormFlightPageState extends State<FormFlightPage> {
               ),
               const SizedBox(height: 5),
               TextFormField(
+                controller: _flightNumberController,
                 cursorColor: Colors.blue,
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(
@@ -62,70 +102,11 @@ class _FormFlightPageState extends State<FormFlightPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 50),
-              const Text(
-                "Buscar fecha de vuelo",
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-              ),
-              const SizedBox(height: 5),
-              TextFormField(
-                decoration: const InputDecoration(
-                  labelText: 'Origen',
-                  hintText: 'Ej: Santiago',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor, ingresa el origen';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                decoration: const InputDecoration(
-                  labelText: 'Destino',
-                  hintText: 'Ej: Nueva York',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor, ingresa el destino';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime(2020),
-                    lastDate: DateTime(2025),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 15, horizontal: 20),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: const Text(
-                  'Seleccionar fecha',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                  ),
-                ),
-              ),
               const SizedBox(height: 100),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    // Si el formulario es válido, procesa la búsqueda
+                    getFlightByNumber(_flightNumberController.text);
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Procesando búsqueda...')),
                     );
@@ -139,14 +120,32 @@ class _FormFlightPageState extends State<FormFlightPage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: const Text(
-                  'Buscar',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                  ),
-                ),
+                child: isLoading
+                    ? const CircularProgressIndicator(
+                        color: Colors.white,
+                      )
+                    : const Text(
+                        'Buscar',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                        ),
+                      ),
               ),
+              // Muestra los detalles del vuelo aquí
+              if (flight != null) ...[
+                const SizedBox(height: 20),
+                Text(
+                  'Detalles del Vuelo:',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                Text('Número de vuelo: ${flight?.flight.number}'),
+                Text('Aerolínea: ${flight?.airline.iataCode}'),
+                Text('Llegada: ${flight?.arrival.iataCode}'),
+                Text('Salida: ${flight?.departure.iataCode}'),
+                Text('Estado: ${flight?.status}'),
+                // Agrega más detalles según la estructura de tu modelo FlightNum
+              ],
             ],
           ),
         ),

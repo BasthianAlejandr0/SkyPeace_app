@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
     return  MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Login SkyPeace',
-      initialRoute: 'Inicio',
+      initialRoute: 'Formulario de vuelo',
       routes: {
         //Funcion anonima
         'Registro': (_) => const SignupPage(),
