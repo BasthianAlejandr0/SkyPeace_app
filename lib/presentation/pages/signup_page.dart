@@ -150,10 +150,9 @@ class FormRegister extends StatelessWidget {
                     username: formRegister.username,
                     repassword: formRegister.repassword,
                   );
-                  // ignore: use_build_context_synchronously
+                  // Navegar a la pantalla de inicio de sesión
                   Navigator.pushNamed(context, 'Inicio Sesion');
                 } catch (e) {
-                  // ignore: use_build_context_synchronously
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(e.toString())),
                   );

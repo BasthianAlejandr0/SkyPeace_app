@@ -16,24 +16,29 @@ class AuthServicesSignup {
     }
 
     try {
-      // Registro de usuario con Firebase Authentication
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+  // Registro de usuario con Firebase Authentication
+    UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
 
-      // Guardar información adicional en Firestore
-      await _firestore.collection('usuarios').doc(userCredential.user?.uid).set({
-        'username': username,
-        'email': email,
-        'createdAt': FieldValue.serverTimestamp(),//Se guarda la fecha de creación del usuario.
+    // Guardar información adicional en Firestore
+    await _firestore.collection('usuarios').doc(userCredential.user?.uid).set({
+      'username': username,
+      'email': email,
+      'createdAt': FieldValue.serverTimestamp(),
+    });
 
-      });
-
-      // Puedes manejar la navegación u otras lógicas aquí, si es necesario.
-
-    } catch (e) { //¿Que es el e? Es un objeto que contiene información sobre el error que ocurrió.
-      throw Exception("Error al registrar el usuario: $e");
+  } on FirebaseAuthException catch (e) {
+    if (e.code == 'email-already-in-use') {
+      throw Exception("El correo ya está en uso. Intenta con otro.");
+    } else if (e.code == 'weak-password') {
+      throw Exception("La contraseña es demasiado débil.");
+    } else {
+      throw Exception("Error al registrar el usuario: ${e.message}");
     }
+  } catch (e) {
+    throw Exception("Error al registrar el usuario: $e");
+  }
   }
 }

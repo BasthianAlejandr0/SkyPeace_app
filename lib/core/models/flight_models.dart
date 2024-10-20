@@ -1,3 +1,4 @@
+// ignore: file_names
 class FlightNum {
   final Aircraft aircraft;
   final Airline airline;
@@ -55,7 +56,7 @@ class Aircraft {
   final String regNumber;
 
   Aircraft({
-    required this.iataCode,
+    required this.iataCode, 
     required this.icao24,
     required this.icaoCode,
     required this.regNumber,
