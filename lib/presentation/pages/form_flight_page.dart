@@ -17,6 +17,7 @@ class _FormFlightPageState extends State<FormFlightPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _flightNumberController = TextEditingController();//Controlador del número de vuelo
   final TextEditingController _airlineController = TextEditingController(); //Controlador del código de aerolínea
+  final TextEditingController _altitudeController = TextEditingController();//Controlador de la altitud
   final TextEditingController _departureAirportController = TextEditingController();//Controlador del aeropuerto de salida
   final TextEditingController _aircraftTypeController = TextEditingController();//Controlador del tipo de aeronave
   final TextEditingController _airlineCodeController = TextEditingController();//Controlador del código de aerolínea
@@ -29,6 +30,7 @@ class _FormFlightPageState extends State<FormFlightPage> {
   FlightNum? flight;
   bool isLoading = false;
 
+  
   // Función para obtener datos del vuelo por número por aerolínea y número de vuelo	
  Future<void> getFlightByNumber(String airline, String flightNumber) async {
   const String endpoint = 'https://aviation-edge.com/v2/public/flights';
@@ -41,6 +43,7 @@ class _FormFlightPageState extends State<FormFlightPage> {
     final response = await Dio().get(
       '$endpoint?airlineIata=$airline&flightNum=$flightNumber&key=$apiKey',
     );
+    print(apiKey);
 
     if (response.data != null && response.data.isNotEmpty) {
       final flightData = response.data[0];
@@ -57,14 +60,10 @@ class _FormFlightPageState extends State<FormFlightPage> {
       estimatedDuration: '', // Duración estimada (añádela si está disponible en otro campo)
       flightNumber: flight?.flight.number ?? '', // Número de vuelo
       status: flight?.status ?? '', // Estado del vuelo
+      speed: flight?.speed.horizontal.toString() ?? '', // Velocidad horizontal
+      geography: flight?.geography.altitude.toString() ?? '', // Datos de geografía;
     );
 
-
-
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Datos del vuelo guardados en Firestore')),
-      );
     } else {
       flight = null;
       // ignore: use_build_context_synchronously
@@ -75,12 +74,15 @@ class _FormFlightPageState extends State<FormFlightPage> {
 
     setState(() {});
   } catch (e) {
-    // ignore: avoid_print
+  if (e is DioError) {
+    print('Dio error: ${e.response?.data ?? e.message}');
+  } else {
     print('Error al obtener datos del vuelo: $e');
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Error al obtener datos del vuelo.')),
-    );
-    flight = null;
+  }
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text('Error al obtener datos del vuelo.')),
+  );
+  flight = null;
   } finally {
     setState(() {
       isLoading = false;
@@ -132,7 +134,7 @@ class _FormFlightPageState extends State<FormFlightPage> {
                   hintStyle: TextStyle(color: Colors.grey),
                   labelStyle: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
                   labelText: 'Código de Aerolínea',
-                  hintText: 'Ejemplo: LAN',
+                  hintText: 'Ejemplo: LA',
                   border: OutlineInputBorder(),
                 ),
                 validator: (value) {
@@ -170,8 +172,8 @@ class _FormFlightPageState extends State<FormFlightPage> {
                   if (_formKey.currentState!.validate()) {
                     // Llama a la función de búsqueda con ambos parámetros
                     getFlightByNumber(
-                      _airlineController.text.trim(), 
-                      _flightNumberController.text.trim()
+                      _airlineController.text.toString(), 
+                      _flightNumberController.text.toString()
                       );
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Procesando búsqueda...')),
@@ -197,6 +199,36 @@ class _FormFlightPageState extends State<FormFlightPage> {
                         ),
                       ),
               ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  if (flight != null) {
+                    Navigator.pushNamed(
+                      context,
+                      'Pronostico de vuelo', // Navega a la página de pronóstico de vuelo
+                      arguments: flight, // Pasa el objeto `flight` como argumento
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('No hay datos de vuelo disponibles')),
+                    );
+                  }
+                }, 
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Text(
+                  'Comenzar Vuelo',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                  ),
+                ),
+              ), 
               
               if (flight != null) ...[
                 const SizedBox(height: 20),
@@ -373,6 +405,59 @@ class _FormFlightPageState extends State<FormFlightPage> {
                         ),
                         ],
                       ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                        Text(
+                          'Velocidad:',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[700]),
+                        ),
+                        Text(
+                          '${flight?.speed.horizontal}',
+                          style: TextStyle(fontSize: 16, color: Colors.blue[700]),
+                        ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                        Text(
+                          'Latitud:',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[700]),
+                        ),
+                        Text(
+                          '${flight?.geography.latitude}',
+                          style: TextStyle(fontSize: 16, color: Colors.blue[700]),
+                        ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                        Text(
+                          'Longitud:',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[700]),
+                        ),
+                        Text(
+                          '${flight?.geography.longitude}',
+                          style: TextStyle(fontSize: 16, color: Colors.blue[700]),
+                        ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                        Text(
+                          'Altitud:',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey[700]),
+                        ),
+                        Text(
+                          '${flight?.geography.altitude}',
+                          style: TextStyle(fontSize: 16, color: Colors.blue[700]),
+                        ),
+                        ],
+                      )
                     ],
                   ),
                 ),

@@ -139,10 +139,10 @@ class Geography {
 
   factory Geography.fromJson(Map<String, dynamic> json) {
     return Geography(
-      altitude: json['altitude']?.toDouble() ?? 0.0,
-      direction: json['direction'] ?? 0,
-      latitude: json['latitude']?.toDouble() ?? 0.0,
-      longitude: json['longitude']?.toDouble() ?? 0.0,
+      altitude: (json['altitude'] as num?)?.toDouble() ?? 0.0,
+      direction: (json['direction'] as num?)?.toInt() ?? 0,
+      latitude: (json['latitude'] as num?)?.toDouble() ?? 0.0,
+      longitude: (json['longitude'] as num?)?.toDouble() ?? 0.0,
     );
   }
 
@@ -165,9 +165,9 @@ class Speed {
 
   factory Speed.fromJson(Map<String, dynamic> json) {
     return Speed(
-      horizontal: json['horizontal']?.toDouble() ?? 0.0,
-      isGround: json['isGround'] ?? 0,
-      vspeed: json['vspeed'] ?? 0,
+      horizontal: (json['horizontal'] as num?)?.toDouble() ?? 0.0,
+      isGround: (json['isGround'] as num?)?.toInt() ?? 0,
+      vspeed: (json['vspeed'] as num?)?.toInt() ?? 0,
     );
   }
 
@@ -189,7 +189,7 @@ class System {
   factory System.fromJson(Map<String, dynamic> json) {
     return System(
       squawk: json['squawk'],
-      updated: json['updated'] ?? 0,
+      updated: (json['updated'] as num?)?.toInt() ?? 0,
     );
   }
 

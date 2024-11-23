@@ -1,0 +1,1 @@
+const String apiKeyWeather = 'be11266882634c37098fb8cfb4b77f1d';
